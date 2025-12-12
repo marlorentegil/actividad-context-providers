@@ -1,7 +1,8 @@
+import { useTheme } from "@/context/ThemeContext";
 
 export default function ThemeToggle() {
     // TODO
-    //const { theme, toggleTheme } = useTheme();
+    const { theme, toggleTheme } = useTheme();
     /* --------------------------- */
     // Eliminar
     const theme = "light";

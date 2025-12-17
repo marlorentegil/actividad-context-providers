@@ -7,11 +7,8 @@ import HomePage from "@/pages/HomePage.tsx";
 // Ruta protegida: solo deja pasar si hay usuario
 function RequireAuth() {
     // TODO
-    //const {user} = useAuth();
-    /* --------------------------- */
-    const user = {name:"John Doe"};
-
-    /* --------------------------- */
+    const {user} = useAuth();
+    
     if (!user) {
         return <Navigate to="/login" replace/>;
     }
@@ -29,26 +26,29 @@ function LayoutWrapper() {
 
 export const router = createBrowserRouter([
     {
-        path: "/",
-        element: <LayoutWrapper/>,
+        // Rutas que usan el Layout principal
+        element: <LayoutWrapper />,
         children: [
             {
-                path: "/login",
-                element: <LoginPage/>,
-            },
-            {
-                element: <RequireAuth/>,
+                // Rutas protegidas
+                element: <RequireAuth />,
                 children: [
                     {
-                        index: true, // "/"
-                        element: <HomePage/>,
+                        path: "/", // Página principal
+                        element: <HomePage />,
                     },
+                    // Otras rutas protegidas aquí
                 ],
+            },
+            {
+                // Ruta de login (fuera de RequireAuth, pero dentro del Layout si quieres que mantenga el diseño)
+                path: "/login",
+                element: <LoginPage />,
             },
         ],
     },
     {
         path: "*",
-        element: <Navigate to="/" replace/>,
+        element: <Navigate to="/" replace />,
     },
 ]);

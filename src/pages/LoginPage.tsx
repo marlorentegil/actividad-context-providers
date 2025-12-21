@@ -1,37 +1,35 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
+import { useAuth } from "@/context/AuthContext"; // Importamos la autenticación real
+import { useLanguage } from "@/context/LanguageContext"; // Importamos el idioma real
 
 import es from "../locales/es.json";
 import en from "../locales/en.json";
+
 const translations = { es, en } as const;
 export type Language = "es" | "en";
 
 export default function LoginPage() {
-    // TODO
-    //const {login} = useAuth();
-    const login = (username:string)=>{
-        console.log(`Autenticado comom ${username}`);
-    }
+    // CONTEXTOS REALES
+    const { login } = useAuth();
+    const { language } = useLanguage(); 
 
-    //const {t} = useLanguage();
-    /* --------------------------- */
-    // Eliminar
-    const language:Language = "es";
-    const t = (key:string):string => {
+    // Función de traducción conectada al contexto global
+    const t = (key: string): string => {
         // @ts-ignore
-        return translations[language][key];
+        return translations[language][key] || key;
     }
-    /* --------------------------- */
-
 
     const [name, setName] = useState("");
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!name.trim()) return;
+        
+        // Llamada a la función login del AuthContext
         login(name.trim());
-
     };
 
+    // --- EL RETURN SE MANTIENE EXACTAMENTE IGUAL ---
     return (
         <section className="max-w-md bg-white dark:bg-slate-800 rounded-xl shadow-md p-6 space-y-4">
             <div>
@@ -66,4 +64,3 @@ export default function LoginPage() {
         </section>
     );
 }
-

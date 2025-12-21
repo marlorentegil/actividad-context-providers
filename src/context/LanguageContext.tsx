@@ -1,56 +1,57 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-const LANGUAGE_KEY: string = "app-language"
+// Clave para identificar el idioma en el almacenamiento local del navegador
+const LANGUAGE_KEY: string = "app-language";
 
+// Definición de tipos permitidos
 type Language = 'en' | 'es';
 
 type LanguageContextType = {
     language: Language;
-    toggleLanguage: ()=> void;
-}
+    // Cambiamos a setLanguage para poder elegir un idioma específico (ES o EN)
+    setLanguage: (lang: Language) => void;
+};
 
-const LenguageContext = createContext<LanguageContextType | undefined>(undefined);
+// Creamos el contexto con un valor inicial indefinido
+const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 type LanguageProviderProps = {
     children: React.ReactNode;
-}
+};
 
-export default function LanguageProvider({children}:LanguageProviderProps){
+export default function LanguageProvider({ children }: LanguageProviderProps) {
+    // Inicializamos el estado leyendo de localStorage o usando 'es' por defecto
+    const [language, setLanguage] = useState<Language>(() => {
+        const currentLanguage = window.localStorage.getItem(LANGUAGE_KEY);
+        return (currentLanguage === 'en' || currentLanguage === 'es') ? currentLanguage : 'es';
+    });
 
-    const currentLanguage = window.localStorage.getItem(LANGUAGE_KEY);
-    const storedLanguage = currentLanguage === 'en' ? 'en' : 'es';
-
-    const [language, setLanguage] = useState<Language>(storedLanguage);
-
-    const toggleLanguage = () =>{
-        setLanguage((prev) => (prev === "es" ? "en" : "es"));
-    };
-
-
+    // Efecto para sincronizar el estado con el localStorage y el atributo lang del HTML
     useEffect(() => {
-        const root = document.documentElement;
-        if(language === 'en'){
-            root.classList.add('en');
-        }else{
-            root.classList.remove('en');
-        }
+        // Guardamos la preferencia del usuario
         window.localStorage.setItem(LANGUAGE_KEY, language);
-    },[language]);
+        
+        // Actualizamos el atributo lang del documento (buena práctica para accesibilidad)
+        document.documentElement.lang = language;
+    }, [language]);
 
-    const value:LanguageContextType = {language, toggleLanguage}
+    // Preparamos el valor que el Provider entregará a los hijos
+    const value: LanguageContextType = { language, setLanguage };
 
-    return(
-        <LenguageContext.Provider value = {value}>
+    return (
+        <LanguageContext.Provider value={value}>
             {children}
-        </LenguageContext.Provider>
+        </LanguageContext.Provider>
     );
-
 }
 
-export function useLanguage(){
-    const ctx = useContext(LenguageContext);
-    if(!ctx){
-        throw new Error("useTheme debe usarse dentro de un LanguageProvider")
+// Hook personalizado para consumir el contexto de forma segura
+export function useLanguage() {
+    const ctx = useContext(LanguageContext);
+    
+    // Si el hook se usa fuera del Provider, lanzamos un error descriptivo
+    if (!ctx) {
+        throw new Error("useLanguage debe usarse dentro de un LanguageProvider");
     }
     return ctx;
 }

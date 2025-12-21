@@ -11,7 +11,8 @@ export default function ThemeToggle() {
     return (
         <button
             onClick={toggleTheme}
-            className="px-3 py-1 rounded-md border border-slate-400 bg-white text-xs flex items-center gap-2 dark:bg-slate-800 dark:border-slate-500"
+            className="px-3 py-1 rounded-md border border-slate-400 bg-white text-slate-900 transition-colors 
+                    dark:bg-slate-800 dark:text-white dark:border-slate-500 text-xs flex items-center gap-2"
         >
             <span>{label}</span>
         </button>
